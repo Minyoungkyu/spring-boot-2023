@@ -2,6 +2,8 @@ package com.sbs.demo5.domain.post.service;
 
 import com.sbs.demo5.base.app.AppConfig;
 import com.sbs.demo5.base.rsData.RsData;
+import com.sbs.demo5.domain.document.service.DocumentService;
+import com.sbs.demo5.domain.document.standard.DocumentHavingSortableTags;
 import com.sbs.demo5.domain.genFile.entity.GenFile;
 import com.sbs.demo5.domain.genFile.service.GenFileService;
 import com.sbs.demo5.domain.member.entity.Member;
@@ -9,7 +11,6 @@ import com.sbs.demo5.domain.post.entity.Post;
 import com.sbs.demo5.domain.post.repository.PostRepository;
 import com.sbs.demo5.domain.postKeyword.entity.PostKeyword;
 import com.sbs.demo5.domain.postKeyword.repository.PostKeywordRepository;
-import com.sbs.demo5.domain.textEditor.service.TextEditorService;
 import com.sbs.demo5.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,12 +29,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostService {
-    public final static String tagsStrSortRegex = "\\[-?\\d*\\/?-?\\d*\\]";
-    public final static String tagsStrDivisorRegex = "#|,";
     private final PostRepository postRepository;
     private final PostKeywordRepository postKeywordRepository;
     private final GenFileService genFileService;
-    private final TextEditorService textEditorService;
+    private final DocumentService documentService;
 
     @Transactional
     public RsData<Post> write(Member author, String subject, String tagsStr, String body) {
@@ -54,7 +53,7 @@ public class PostService {
         Map<String, PostKeyword> postKeywordsMap = findPostKeywordsMap(author, tagsStr);
         post.addTags(tagsStr, postKeywordsMap);
 
-        textEditorService.updateTempGenFilesToInBody(post);
+        documentService.updateTempGenFilesToInBody(post);
 
         return new RsData<Post>("S-1", post.getId() + "번 글이 생성되었습니다.", post);
     }
@@ -89,15 +88,15 @@ public class PostService {
         post.setBody(body);
         post.setBodyHtml(bodyHtml);
 
-        textEditorService.updateTempGenFilesToInBody(post);
+        documentService.updateTempGenFilesToInBody(post);
 
         return new RsData<>("S-1", post.getId() + "번 글이 수정되었습니다.", post);
     }
 
     private Map<String, PostKeyword> findPostKeywordsMap(Member author, String tagsStr) {
-        tagsStr = tagsStr.replaceAll(PostService.tagsStrSortRegex, "");
+        tagsStr = tagsStr.replaceAll(DocumentHavingSortableTags.TAGS_STR_SORT_REGEX, "");
 
-        return Arrays.stream(tagsStr.split(PostService.tagsStrDivisorRegex))
+        return Arrays.stream(tagsStr.split(DocumentHavingSortableTags.TAGS_STR_DIVISOR_REGEX))
                 .map(String::trim)
                 .map(String::toUpperCase)
                 .filter(tag -> !tag.isEmpty())

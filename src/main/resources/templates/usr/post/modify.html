@@ -37,7 +37,7 @@
                        name="tagsStr"
                        placeholder="입력예시 : `#자바 #HTML[5] #알고리즘[2/3] ...`          ※ `[2/3]` 에서 각 숫자 설명 : `2`는 전체 `알고리즘` 글들 중에서 이 글의 순서번호(조절가능), `3`은 전체 `알고리즘` 글들의 총 개수"
                        type="text" th:value="${post.tagsWithSortNoStr}">
-                <ul th:replace="usr/post/write :: postTagInputDesc"></ul>
+                <ul th:replace="~{usr/post/write :: postTagInputDesc}"></ul>
             </div>
 
             <div class="form-control">

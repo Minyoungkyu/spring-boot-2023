@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -30,7 +29,8 @@ import java.util.regex.Pattern;
 
 public class Ut {
     public static class markdown {
-
+        // 오직 초기 데이터를 생성하는데만 사용된다.
+        // 운영모드에서는 사용되지 않는다.
         public static String toHtml(String body) {
             return body.replace("\r\n", "<br>");
         }
@@ -44,7 +44,11 @@ public class Ut {
     }
 
     public static class file {
-        private static final String ORIGIN_FILE_NAME_SEPARATOR = "--originFileName_";
+        private static final String ORIGIN_FILE_NAME_SEPARATOR;
+
+        static {
+            ORIGIN_FILE_NAME_SEPARATOR = "--originFileName_";
+        }
 
         public static String getOriginFileName(String file) {
             if (file.contains(ORIGIN_FILE_NAME_SEPARATOR)) {
@@ -151,7 +155,7 @@ public class Ut {
             String filePath = outputDir + "/" + tempFileName;
 
             try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
-                ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(fileUrl).openStream());
+                ReadableByteChannel readableByteChannel = Channels.newChannel(new URI(fileUrl).toURL().openStream());
                 FileChannel fileChannel = fileOutputStream.getChannel();
                 fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
             } catch (Exception e) {
@@ -366,10 +370,6 @@ public class Ut {
 
         public static String value(List<String> requestParameterValues) {
             return getFirstStrOrEmpty(requestParameterValues);
-        }
-
-        public static String toHref(List<String> requestParameterValues) {
-            return "HI";
         }
     }
 }

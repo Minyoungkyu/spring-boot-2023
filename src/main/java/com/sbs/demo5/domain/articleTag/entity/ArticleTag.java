@@ -2,6 +2,7 @@ package com.sbs.demo5.domain.articleTag.entity;
 
 import com.sbs.demo5.base.jpa.baseEntity.BaseEntity;
 import com.sbs.demo5.domain.article.entity.Article;
+import com.sbs.demo5.domain.document.standard.DocumentTag;
 import com.sbs.demo5.domain.member.entity.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -19,7 +20,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @SuperBuilder
 @ToString(callSuper = true)
-public class ArticleTag extends BaseEntity {
+public class ArticleTag extends BaseEntity implements DocumentTag {
     @ManyToOne
     private Member author;
 
