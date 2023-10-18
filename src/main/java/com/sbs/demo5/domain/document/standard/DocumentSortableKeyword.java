@@ -29,22 +29,22 @@ public interface DocumentSortableKeyword {
         tag.setSortNo(newSortNo);
     }
 
-    default void addTag(DocumentSortableTag tag) {
-        tag.setKeyword(this);
+    default void addTag(DocumentSortableTag tag) { // 태그 추가 부가
+        tag.setKeyword(this); // 키워드 세팅
         boolean added = _addTag(tag);
 
         if (added) {
-            tag.setSortNo(getTotal() + 1);
-            setTotal(getTotal() + 1);
+            tag.setSortNo(getTotal() + 1); // 토탈 +1
+            setTotal(getTotal() + 1); // 솥넘 +1
         }
     }
 
     boolean _addTag(DocumentSortableTag tag);
 
-    default void removeTag(DocumentSortableTag tag) {
-        getTags().stream().filter(t -> t.getSortNo() > tag.getSortNo()).forEach(t -> t.setSortNo(t.getSortNo() - 1));
+    default void removeTag(DocumentSortableTag tag) { // 태그 제거
+        getTags().stream().filter(t -> t.getSortNo() > tag.getSortNo()).forEach(t -> t.setSortNo(t.getSortNo() - 1)); // 제거 할 태그의 솥 넘 보다 큰 애들의 솥넘 -1
 
-        getTags().remove(tag);
-        setTotal(getTotal() - 1);
+        getTags().remove(tag); // 태그 제거
+        setTotal(getTotal() - 1); // 토탈도 -1
     }
 }

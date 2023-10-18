@@ -10,7 +10,7 @@ public interface DocumentHavingSortableTags extends DocumentHavingTags {
 
     Set<? extends DocumentSortableTag> getTags();
 
-    default String getTagsWithSortNoStr() {
+    default String getTagsWithSortNoStr() { // #tag[sortNo/total]
         if (getTags().isEmpty()) return "";
 
         return "#" + getTags()
@@ -21,10 +21,10 @@ public interface DocumentHavingSortableTags extends DocumentHavingTags {
     }
 
     default void modifyTags(String newTagsStr, Map<String, ? extends DocumentSortableKeyword> keywordsMap) {
-        String inputedNewTagsStr = newTagsStr;
-        newTagsStr = newTagsStr.replaceAll(DocumentHavingSortableTags.TAGS_STR_SORT_REGEX, "");
+        String inputedNewTagsStr = newTagsStr; //#tag[1/1]
+        newTagsStr = newTagsStr.replaceAll(DocumentHavingSortableTags.TAGS_STR_SORT_REGEX, ""); // #tag
 
-        Set<String> newTags = Arrays.stream(newTagsStr.split(DocumentHavingSortableTags.TAGS_STR_DIVISOR_REGEX))
+        Set<String> newTags = Arrays.stream(newTagsStr.split(DocumentHavingSortableTags.TAGS_STR_DIVISOR_REGEX)) // tag
                 .map(String::trim)
                 .map(String::toUpperCase)
                 .filter(tagContent -> !tagContent.isEmpty())
@@ -43,11 +43,11 @@ public interface DocumentHavingSortableTags extends DocumentHavingTags {
     }
 
     default void addTag(String tagContent, Map<String, ? extends DocumentSortableKeyword> keywordsMap) {
-        DocumentSortableTag tag = (DocumentSortableTag) addTag(tagContent);
+        DocumentSortableTag tag = (DocumentSortableTag) addTag(tagContent); // 태그 추가 하고
 
-        DocumentSortableKeyword keyword = keywordsMap.get(tagContent);
+        DocumentSortableKeyword keyword = keywordsMap.get(tagContent); // 이 태그의 키워드 찾고
 
-        keyword.addTag(tag);
+        keyword.addTag(tag); // 키워드 add 호출 ( total, sortNo 재정렬 요청)
     }
 
     default void addTags(String tagsStr, Map<String, ? extends DocumentSortableKeyword> keywordsMap) {
@@ -58,7 +58,7 @@ public interface DocumentHavingSortableTags extends DocumentHavingTags {
                 .map(String::trim)
                 .map(String::toUpperCase)
                 .filter(tagContent -> !tagContent.isEmpty())
-                .distinct()
+                .distinct() // 중복시 stream 에서 제거
                 .forEach(tagContent -> addTag(tagContent, keywordsMap));
 
         Arrays.stream(inputedTagsStr.split(DocumentHavingSortableTags.TAGS_STR_DIVISOR_REGEX))
@@ -67,9 +67,9 @@ public interface DocumentHavingSortableTags extends DocumentHavingTags {
                 .filter(tagContent -> !tagContent.isEmpty())
                 .distinct()
                 .forEach(tagContent -> {
-                    String[] tagContentBits = tagContent.split("\\[", 2);
+                    String[] tagContentBits = tagContent.split("\\[", 2); // [ i/i ]
 
-                    if (tagContentBits.length == 1) return;
+                    if (tagContentBits.length == 1) return; // [] 없으면 return
 
                     tagContent = tagContentBits[0];
 
@@ -77,14 +77,14 @@ public interface DocumentHavingSortableTags extends DocumentHavingTags {
 
                     long newSortNo;
 
-                    try {
+                    try {  // 앞의 숫자 long 으로
                         newSortNo = Long.parseLong(tagContentBits[0].replace("]", "").trim());
                     } catch (Exception ignored) {
                         return;
                     }
 
-                    if (newSortNo < 1) newSortNo = 1;
-                    if (newSortNo > keywordsMap.get(tagContent).getTotal())
+                    if (newSortNo < 1) newSortNo = 1; // 1보다 작으면 1
+                    if (newSortNo > keywordsMap.get(tagContent).getTotal()) // total 보다 크면 total
                         newSortNo = keywordsMap.get(tagContent).getTotal();
 
                     final long _newSortNo = newSortNo;
@@ -92,9 +92,9 @@ public interface DocumentHavingSortableTags extends DocumentHavingTags {
 
                     getTags()
                             .stream()
-                            .filter(tag -> tag.getContent().equals(_tagContent))
+                            .filter(tag -> tag.getContent().equals(_tagContent)) // 기존 태그에 이미 있으면 걸림
                             .findFirst()
-                            .ifPresent(tag -> tag.applySortNo(_newSortNo));
+                            .ifPresent(tag -> tag.applySortNo(_newSortNo)); // filter 에서 걸린게 있으면 applySortNo(newSortNo) 호출
                 });
     }
 }

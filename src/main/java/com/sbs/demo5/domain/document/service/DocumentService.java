@@ -36,15 +36,16 @@ public class DocumentService {
         // 그것을 위한 일종의 캐시 저장소이다.
         final Map<String, String> urlsMap = new HashMap<>();
 
-        String newBody = Ut.str.replace(doc.getBody(), "\\(" + TEMP_FILE_PATH + "/([^)]+)\\?type=temp\\)", (String url) -> {
-            url = TEMP_FILE_PATH + "/" + url;
-            String newUrl = genFileService.tempToFile(url, (BaseEntity) doc, "common", "inBody", 0).getUrl();
-            urlsMap.put(url, newUrl);
-            return "(" + newUrl + ")";
+        String newBody = Ut.str.replace(doc.getBody(), "\\(" + TEMP_FILE_PATH + "/([^)]+)\\?type=temp\\)", (String url) -> { // file 경로 따기
+            url = TEMP_FILE_PATH + "/" + url; // 그 경로
+            String newUrl = genFileService.tempToFile(url, (BaseEntity) doc, "common", "inBody", 0).getUrl(); // 위에서 딴 경로의 실제 파일을 이동 해서 저장 하고 기존 삭제
+            urlsMap.put(url, newUrl); // 이동한 파일의 경로 저장
+            return "(" + newUrl + ")"; // 기존의 파일 경로를 새로운 경로로 replace 해서 return
         });
 
         doc.setBody(newBody);
 
+        // 위의 작업을 똑같이 반복 ( 단, 실제 파일을 이동 시키는 로직만 없음)
         String newBodyHtml = Ut.str.replace(doc.getBodyHtml(), "=\"" + TEMP_FILE_PATH + "/([^\" ]+)\\?type=temp\"", (String url) -> {
             url = TEMP_FILE_PATH + "/" + url;
             String newUrl = urlsMap.get(url);
