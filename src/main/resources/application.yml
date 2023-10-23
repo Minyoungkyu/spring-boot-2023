@@ -31,7 +31,7 @@ spring:
   datasource:
     url: jdbc:mariadb://localhost:3306/demo5
     username: root
-    password:
+    password: qkqh134679258
     driver-class-name: org.mariadb.jdbc.Driver
   #    url: jdbc:mysql://localhost:3306/demo5
   #    username: root

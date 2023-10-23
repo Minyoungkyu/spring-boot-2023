@@ -39,7 +39,7 @@ public interface DocumentSortableKeyword {
         }
     }
 
-    boolean _addTag(DocumentSortableTag tag);
+    boolean _addTag(DocumentSortableTag tag); // Set 에 add 하기.
 
     default void removeTag(DocumentSortableTag tag) { // 태그 제거
         getTags().stream().filter(t -> t.getSortNo() > tag.getSortNo()).forEach(t -> t.setSortNo(t.getSortNo() - 1)); // 제거 할 태그의 솥 넘 보다 큰 애들의 솥넘 -1
